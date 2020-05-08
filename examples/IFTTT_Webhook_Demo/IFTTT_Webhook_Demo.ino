@@ -23,7 +23,7 @@ SOFTWARE.
 */
 #include <ESP8266Webhook.h> //Include the library
 #include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
+//#include <ESP8266HTTPClient.h>
 
 #define api_key "Change_this"       //Your Webhook key
 #define ifttt_event "Change_this"  //Your IFTTT event name
