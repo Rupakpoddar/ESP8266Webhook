@@ -1,2 +1,2 @@
-Webhook	KEYWORD1
-trigger	KEYWORD2
+Webhook KEYWORD1
+trigger KEYWORD2
