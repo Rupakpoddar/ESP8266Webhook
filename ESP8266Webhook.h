@@ -23,22 +23,23 @@ SOFTWARE.
 */
 
 #ifndef ESP8266Webhook_h
-  #define ESP8266Webhook_h
-  #include "Arduino.h"
-  #include <ESP8266HTTPClient.h>
-  #include <WiFiClient.h>
+#define ESP8266Webhook_h
+#include "Arduino.h"
+#include <ESP8266HTTPClient.h>
+#include <WiFiClient.h>
 
-  class Webhook
-  {
-    public:
-      Webhook(String api_key, String event_name);
-      int trigger(String value_1, String value_2, String value_3);
-      int trigger(String value_1, String value_2);
-      int trigger(String value_1);
-      int trigger();
+class Webhook
+{
+public:
+  Webhook(String api_key, String event_name);
+  int trigger(String value_1, String value_2, String value_3);
+  int trigger(String value_1, String value_2);
+  int trigger(String value_1);
+  int trigger();
+  String urlEncode(String str);
 
-    private:
-      String _api_key;
-      String _event_name;
-  };
+private:
+  String _api_key;
+  String _event_name;
+};
 #endif
