@@ -42,8 +42,27 @@ int Webhook::trigger(String value_1, String value_2, String value_3){
   HTTPClient http;
   http.begin(client, "http://maker.ifttt.com/trigger/" +
               _event_name+"/with/key/"+_api_key +
-              "?value1="+value_1+"&value2="+value_2+"&value3="+value_3);
+              "?value1="+urlEncode(value_1)+"&value2="+urlEncode(value_2)+"&value3="+urlEncode(value_3));
   int httpCode = http.GET();
   http.end();
   return httpCode;
+}
+
+String Webhook::urlEncode(String value){
+  String encodedString = "";
+
+  for(int i=0; i<value.length(); i++){
+    if (value[i] == ' '){
+      encodedString += '+';
+    }
+    else if (isAlphaNumeric(value[i])){
+      encodedString += value[i];
+    }
+    else{
+      encodedString += '%';
+      encodedString += String(value[i], HEX);
+    }
+  }
+
+  return encodedString;
 }

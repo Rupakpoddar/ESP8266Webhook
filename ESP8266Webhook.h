@@ -40,5 +40,6 @@ SOFTWARE.
     private:
       String _api_key;
       String _event_name;
+      String urlEncode(String value);
   };
 #endif
