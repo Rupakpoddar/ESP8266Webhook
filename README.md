@@ -1,2 +1,2 @@
 # ESP8266Webhook
-Arduino library to trigger events using Webhooks and IFTTT.
+IFTTT makes it a breeze to activate events via Webhook using this library with just a single line of code. Seamlessly compatible with IFTTT, this library ensures flawless performance.
