@@ -1,12 +1,17 @@
 #include <ESP8266Webhook.h>
+
+#if defined(ESP8266)
 #include <ESP8266WiFi.h>
+#elif defined(ESP32)
+#include <WiFi.h>
+#endif
 
 #define _SSID "ENTER HERE"      // Your WiFi SSID
 #define _PASSWORD "ENTER HERE"  // Your WiFi Password
 #define KEY "ENTER HERE"        // Webhooks Key
 #define EVENT "ENTER HERE"      // Webhooks Event Name
 
-Webhook webhook(KEY, EVENT);    // Create an object.
+Webhook webhook(KEY, EVENT);  // Create an object.
 
 void setup() {
   Serial.begin(115200);
@@ -38,15 +43,15 @@ void setup() {
   Serial.println("/");
   digitalWrite(LED_BUILTIN, HIGH);
 
-//================================================================//
-//================================================================//
+  //================================================================//
+  //================================================================//
 
   // Trigger with 3 values.
-  webhook.trigger("value1","value2","value3");
+  webhook.trigger("value1", "value2", "value3");
   delay(5000);
 
   // Trigger with 2 values.
-  webhook.trigger("ABC","XYZ");
+  webhook.trigger("ABC", "XYZ");
   delay(5000);
 
   // Trigger with 1 value.
@@ -56,7 +61,7 @@ void setup() {
 
   // Trigger without any value and get response.
   int response = webhook.trigger();
-  if(response == 200)
+  if (response == 200)
     Serial.println("OK");
   else
     Serial.println("Failed");

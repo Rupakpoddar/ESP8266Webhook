@@ -20,49 +20,91 @@ SOFTWARE.
 
 #include "ESP8266Webhook.h"
 
-Webhook::Webhook(String api_key, String event_name){
+Webhook::Webhook(String api_key, String event_name) {
   _api_key = api_key;
   _event_name = event_name;
 }
 
-int Webhook::trigger(){
-  return Webhook::trigger("", "", "");
+/**
+ * Read the response from the core esp32 WiFiClient.
+ */
+void Webhook::readResponse(WiFiClient *client) {
+  unsigned long timeout = millis();
+  while (client->available() == 0) {
+    if (millis() - timeout > 5000) {
+      Serial.println(">>> Client Timeout !");
+      client->stop();
+      return;
+    }
+  }
+
+  // Read all the lines of the reply from server and print them to Serial
+  while (client->available()) {
+    String line = client->readStringUntil('\r');
+    Serial.print(line);
+  }
+
+  // Serial.printf("\nClosing connection\n\n");
 }
 
-int Webhook::trigger(String value_1){
-  return Webhook::trigger(value_1, "", "");
-}
-
-int Webhook::trigger(String value_1, String value_2){
-  return Webhook::trigger(value_1, value_2, "");
-}
-
-int Webhook::trigger(String value_1, String value_2, String value_3){
-  WiFiClient client;
-  HTTPClient http;
-  http.begin(client, "http://maker.ifttt.com/trigger/" +
-              _event_name+"/with/key/"+_api_key +
-              "?value1="+urlEncode(value_1)+"&value2="+urlEncode(value_2)+"&value3="+urlEncode(value_3));
-  int httpCode = http.GET();
-  http.end();
-  return httpCode;
-}
-
-String Webhook::urlEncode(String value){
+String Webhook::urlEncode(String value) {
   String encodedString = "";
 
-  for(int i=0; i<value.length(); i++){
-    if (value[i] == ' '){
+  for (int i = 0; i < value.length(); i++) {
+    if (value[i] == ' ') {
       encodedString += '+';
-    }
-    else if (isAlphaNumeric(value[i])){
+    } else if (isAlphaNumeric(value[i])) {
       encodedString += value[i];
-    }
-    else{
+    } else {
       encodedString += '%';
       encodedString += String(value[i], HEX);
     }
   }
 
   return encodedString;
+}
+
+int Webhook::trigger() {
+  return Webhook::trigger("", "", "");
+}
+
+int Webhook::trigger(String value_1) {
+  return Webhook::trigger(value_1, "", "");
+}
+
+int Webhook::trigger(String value_1, String value_2) {
+  return Webhook::trigger(value_1, value_2, "");
+}
+
+int Webhook::trigger(String value_1, String value_2, String value_3) {
+  WiFiClient client;
+
+#if defined(ESP8266)
+  HTTPClient http;
+  http.begin(client, "http://maker.ifttt.com/trigger/" +
+                         _event_name + "/with/key/" + _api_key +
+                         "?value1=" + urlEncode(value_1) + "&value2=" + urlEncode(value_2) + "&value3=" + urlEncode(value_3));
+  int httpCode = http.GET();
+  http.end();
+  return httpCode;
+#elif defined(ESP32)
+  const char *host = "maker.ifttt.com";
+  const int httpPort = 80;
+  String readRequest = "GET /trigger/" +
+                       _event_name + "/with/key/" + _api_key +
+                       "?value1=" + urlEncode(value_1) + "&value2=" + urlEncode(value_2) + "&value3=" + urlEncode(value_3) + " HTTP/1.1\r\n" +
+                       "Host: " + host + "\r\n" +
+                       "Connection: close\r\n\r\n";
+
+  if (!client.connect(host, httpPort)) {
+    // TODO: Return the correct response code
+    return 500;
+  }
+
+  client.print(readRequest);
+  readResponse(&client);
+
+  // TODO: Return the correct response code
+  return 200;
+#endif
 }
