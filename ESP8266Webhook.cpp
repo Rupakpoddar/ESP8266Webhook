@@ -50,7 +50,7 @@ void Webhook::readResponse(WiFiClient *client) {
 String Webhook::urlEncode(String value) {
   String encodedString = "";
 
-  for (int i = 0; i < value.length(); i++) {
+  for (unsigned int i = 0; i < value.length(); i++) {
     if (value[i] == ' ') {
       encodedString += '+';
     } else if (isAlphaNumeric(value[i])) {
@@ -77,9 +77,20 @@ int Webhook::trigger(String value_1, String value_2) {
 }
 
 int Webhook::trigger(String value_1, String value_2, String value_3) {
-  WiFiClient client;
+#if defined(ESP8266)
+  return triggerESP8266(value_1, value_2, value_3);
+#elif defined(ESP32)
+  return triggerESP32(value_1, value_2, value_3);
+#endif
+}
 
 #if defined(ESP8266)
+
+/**
+ * Call the IFTTT webhook on an ESP8266.
+ */
+int Webhook::triggerESP8266(String value_1, String value_2, String value_3) {
+  WiFiClient client;
   HTTPClient http;
   http.begin(client, "http://maker.ifttt.com/trigger/" +
                          _event_name + "/with/key/" + _api_key +
@@ -87,7 +98,18 @@ int Webhook::trigger(String value_1, String value_2, String value_3) {
   int httpCode = http.GET();
   http.end();
   return httpCode;
-#elif defined(ESP32)
+}
+
+#endif
+
+#if defined(ESP32)
+
+/**
+ * Call the IFTTT webhook on an ESP8266.
+ */
+int Webhook::triggerESP32(String value_1, String value_2, String value_3) {
+  WiFiClient client;
+
   const char *host = "maker.ifttt.com";
   const int httpPort = 80;
   String readRequest = "GET /trigger/" +
@@ -106,5 +128,6 @@ int Webhook::trigger(String value_1, String value_2, String value_3) {
 
   // TODO: Return the correct response code
   return 200;
-#endif
 }
+
+#endif

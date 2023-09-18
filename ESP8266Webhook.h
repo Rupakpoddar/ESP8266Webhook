@@ -47,5 +47,10 @@ class Webhook {
   String _api_key;
   String _event_name;
   String urlEncode(String value);
+#if defined(ESP8266)
+  int triggerESP8266(String value_1, String value_2, String value_3);
+#elif defined(ESP32)
+  int triggerESP32(String value_1, String value_2, String value_3);
+#endif
 };
 #endif
