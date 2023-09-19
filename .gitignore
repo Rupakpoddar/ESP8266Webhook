@@ -3,3 +3,6 @@
 
 # Secret files
 secrets.h
+
+# Ignore dev sketches in project root
+ESP8266Webhook.ino
