@@ -1,2 +1,7 @@
-# ESP8266Webhook
-IFTTT makes it a breeze to activate events via Webhook using this library with just a single line of code. Seamlessly compatible with IFTTT, this library ensures flawless performance.
+# ⚠️ Deprecated Arduino Library
+
+**This library is no longer maintained and has been officially deprecated.**
+
+Due to IFTTT moving the Webhook applet to their Pro version, which significantly reduces the user base and makes testing and updates challenging, this library is no longer maintained.
+
+Thank you for your understanding and support!
